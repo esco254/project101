@@ -1,0 +1,37 @@
+{% extends 'base.html' %}
+
+{% block title %}Contact Us - StayEase{% endblock %}
+
+{% block content %}
+
+    <section class="contact-intro">
+        <h1>Contact Us</h1>
+        <p>We'd love to hear from you. Reach out for reservations, inquiries, or just to say hello.</p>
+    </section>
+
+    <section class="contact-details">
+        <div class="contact-info">
+            <h2>Visit Us</h2>
+            <p>Moyne Drive, Nyali<br>
+            PO Box 81020<br>
+            Mombasa, 80100, Kenya</p>
+
+            <h2>Call Us</h2>
+            <p>+254 700 123 456</p>
+
+            <h2>Email Us</h2>
+            <p>info@stayease.co.ke</p>
+        </div>
+
+        <div class="contact-form">
+            <h2>Send a Message</h2>
+            <form method="post">
+                <input type="text" name="name" placeholder="Your Name" required>
+                <input type="email" name="email" placeholder="Your Email" required>
+                <textarea name="message" placeholder="Your Message" rows="5" required></textarea>
+                <button type="submit" class="btn">Send Message</button>
+            </form>
+        </div>
+    </section>
+
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Home - StayEase{% endblock %}
+
+{% block content %}
+    <section class="hero" id="hero-home">
+        <div class="hero-content">
+            <h1>Where the City Meets the Sea</h1>
+            <p>StayEase is a boutique waterfront hotel offering modern comfort with uninterrupted sea views, right in the heart of the city.</p>
+            <a href="{% url 'rooms' %}" class="btn">Browse Rooms</a>
+        </div>
+    </section>
+{% endblock %}
+
+{% block extra_css %}
+<style>
+    #hero-home {
+        background: linear-gradient(rgba(11,61,76,0.6), rgba(11,61,76,0.6)),
+                    url("{% static 'core/images/hotel-hero.jpg' %}") center/cover no-repeat;
+    }
+</style>
+{% endblock %}

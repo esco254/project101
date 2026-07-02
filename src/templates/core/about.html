@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{%load static %}
+
+{% block title %}About Us - StayEase{% endblock %}
+
+{% block content %}
+
+    <section class="about-intro">
+        <h1>About StayEase</h1>
+        <p>StayEase sits where the city skyline meets the open sea. Born from a love of modern design and relaxed coastal living, our hotel blends sleek, contemporary comfort with the calm of waterfront views.</p>
+    </section>
+
+    <section class="about-details">
+        <h2>Our Story</h2>
+        <p>Founded with a simple idea — that travelers shouldn't
+             have to choose between the energy
+             of the city and the serenity of the sea — StayEase was
+              built to offer both, side by side.</p>
+
+    <img src="{% static 'core/images/about.jpg' %}" alt="Coastal view of the hotel">
+    
+        <h2>Our Promise</h2>
+
+        <p>Every room, every service, and every detail is designed
+             around ease: 
+            easy comfort, easy access to the city, and an easy
+             escape to the water's edge.</p>
+
+    </section>
+
+{% endblock %}

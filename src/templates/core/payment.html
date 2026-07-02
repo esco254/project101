@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - StayEase{% endblock %}
+
+{% block content %}
+
+<section class="payment-section">
+    <h1>Complete Your Payment</h1>
+    <p>You're one step away from confirming your stay at StayEase.</p>
+
+    <div class="booking-summary">
+        <h3>Booking Summary</h3>
+        <p><strong>Room:</strong> {{ booking.room }} (Room {{ booking.room_number }})</p>
+        <p><strong>Stay Type:</strong> {{ booking.stay_type }}</p>
+        <p><strong>Check-in:</strong> {{ booking.checkin }}</p>
+        <p><strong>Check-out:</strong> {{ booking.checkout }}</p>
+        <p><strong>Guests:</strong> {{ booking.guests }}</p>
+    </div>
+
+    <div class="payment-methods">
+        <h3>Select Payment Method</h3>
+
+        <div class="payment-tabs">
+            <button class="pay-tab active" data-method="mpesa">M-Pesa</button>
+            <button class="pay-tab" data-method="card">Card</button>
+        </div>
+
+        <!-- M-Pesa Form -->
+        <div class="pay-form" id="mpesa-form">
+            <p class="pay-hint">Enter your M-Pesa registered phone number. You will receive a prompt to confirm payment.</p>
+            <label>Phone Number</label>
+            <input type="tel" id="mpesa-phone" placeholder="e.g. 0712 345 678">
+            <button class="btn" onclick="simulatePayment('mpesa')">Pay via M-Pesa</button>
+        </div>
+
+        <!-- Card Form -->
+        <div class="pay-form hidden" id="card-form">
+            <label>Card Number</label>
+            <input type="text" placeholder="1234 5678 9012 3456" maxlength="19">
+            <label>Expiry Date</label>
+            <input type="text" placeholder="MM/YY" maxlength="5">
+            <label>CVV</label>
+            <input type="text" placeholder="123" maxlength="3">
+            <button class="btn" onclick="simulatePayment('card')">Pay with Card</button>
+        </div>
+
+        <!-- Processing indicator -->
+        <div class="pay-processing hidden" id="processing">
+            <div class="spinner"></div>
+            <p>Processing your payment, please wait...</p>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Tab switching
+    document.querySelectorAll('.pay-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.pay-form').forEach(f => f.classList.add('hidden'));
+            this.classList.add('active');
+            document.getElementById(this.dataset.method + '-form').classList.remove('hidden');
+        });
+    });
+
+    // Simulate payment
+    function simulatePayment(method) {
+        document.querySelectorAll('.pay-form').forEach(f => f.classList.add('hidden'));
+        document.getElementById('processing').classList.remove('hidden');
+        setTimeout(() => {
+            window.location.href = "{% url 'payment_success' %}";
+        }, 3000);
+    }
+</script>
+
+{% endblock %}
