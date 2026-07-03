@@ -88,3 +88,17 @@ function calculateTotal() {
     document.getElementById(id)?.addEventListener('change', calculateTotal);
     document.getElementById(id)?.addEventListener('input', calculateTotal);
 });
+// Payment tab switching
+const payTabs = document.querySelectorAll('.pay-tab');
+const payPanels = document.querySelectorAll('.pay-panel');
+
+if (payTabs.length) {
+    payTabs.forEach(tab => {
+        tab.addEventListener('click', function () {
+            payTabs.forEach(t => t.classList.remove('active'));
+            payPanels.forEach(p => p.classList.remove('active'));
+            this.classList.add('active');
+            document.getElementById(this.dataset.tab).classList.add('active');
+        });
+    });
+}

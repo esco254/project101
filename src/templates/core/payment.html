@@ -4,73 +4,51 @@
 
 {% block content %}
 
-<section class="payment-section">
-    <h1>Complete Your Payment</h1>
-    <p>You're one step away from confirming your stay at StayEase.</p>
-
-    <div class="booking-summary">
-        <h3>Booking Summary</h3>
-        <p><strong>Room:</strong> {{ booking.room }} (Room {{ booking.room_number }})</p>
-        <p><strong>Stay Type:</strong> {{ booking.stay_type }}</p>
-        <p><strong>Check-in:</strong> {{ booking.checkin }}</p>
-        <p><strong>Check-out:</strong> {{ booking.checkout }}</p>
-        <p><strong>Guests:</strong> {{ booking.guests }}</p>
-    </div>
-
-    <div class="payment-methods">
-        <h3>Select Payment Method</h3>
+    <section class="payment-section">
+        <h1>Complete Your Payment</h1>
+        <p>You're booking: <strong>{{ room }}</strong> — {{ stay_type }}</p>
+        <p class="payment-amount">Total: <span>{{ amount }}</span></p>
 
         <div class="payment-tabs">
-            <button class="pay-tab active" data-method="mpesa">M-Pesa</button>
-            <button class="pay-tab" data-method="card">Card</button>
+            <button class="pay-tab active" data-tab="mpesa">M-Pesa</button>
+            <button class="pay-tab" data-tab="card">Card</button>
         </div>
 
-        <!-- M-Pesa Form -->
-        <div class="pay-form" id="mpesa-form">
-            <p class="pay-hint">Enter your M-Pesa registered phone number. You will receive a prompt to confirm payment.</p>
-            <label>Phone Number</label>
-            <input type="tel" id="mpesa-phone" placeholder="e.g. 0712 345 678">
-            <button class="btn" onclick="simulatePayment('mpesa')">Pay via M-Pesa</button>
-        </div>
+       <form method="post" action="{% url 'payment' %}" class="payment-form">
+            {% csrf_token %}
+            <input type="hidden" name="room" value="{{ room }}">
+            <input type="hidden" name="stay_type" value="{{ stay_type }}">
+            <input type="hidden" name="amount" value="{{ amount }}">
+            <input type="hidden" name="guest_email" value="{{ guest_email }}">
+            <input type="hidden" name="guest_name" value="{{ guest_name }}">
 
-        <!-- Card Form -->
-        <div class="pay-form hidden" id="card-form">
-            <label>Card Number</label>
-            <input type="text" placeholder="1234 5678 9012 3456" maxlength="19">
-            <label>Expiry Date</label>
-            <input type="text" placeholder="MM/YY" maxlength="5">
-            <label>CVV</label>
-            <input type="text" placeholder="123" maxlength="3">
-            <button class="btn" onclick="simulatePayment('card')">Pay with Card</button>
-        </div>
+            <div class="pay-panel active" id="mpesa">
+                <label for="mpesa_number">M-Pesa Phone Number</label>
+                <input type="tel" id="mpesa_number" name="mpesa_number" placeholder="e.g. 0712 345 678">
+                <p class="pay-hint">You will receive a prompt on your phone to confirm payment.</p>
+            </div>
 
-        <!-- Processing indicator -->
-        <div class="pay-processing hidden" id="processing">
-            <div class="spinner"></div>
-            <p>Processing your payment, please wait...</p>
-        </div>
-    </div>
-</section>
+            <div class="pay-panel" id="card">
+                <label for="card_name">Name on Card</label>
+                <input type="text" id="card_name" name="card_name" placeholder="Full name">
 
-<script>
-    // Tab switching
-    document.querySelectorAll('.pay-tab').forEach(tab => {
-        tab.addEventListener('click', function() {
-            document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.pay-form').forEach(f => f.classList.add('hidden'));
-            this.classList.add('active');
-            document.getElementById(this.dataset.method + '-form').classList.remove('hidden');
-        });
-    });
+                <label for="card_number">Card Number</label>
+                <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456">
 
-    // Simulate payment
-    function simulatePayment(method) {
-        document.querySelectorAll('.pay-form').forEach(f => f.classList.add('hidden'));
-        document.getElementById('processing').classList.remove('hidden');
-        setTimeout(() => {
-            window.location.href = "{% url 'payment_success' %}";
-        }, 3000);
-    }
-</script>
+                <div class="card-row">
+                    <div>
+                        <label for="card_expiry">Expiry Date</label>
+                        <input type="text" id="card_expiry" name="card_expiry" placeholder="MM/YY">
+                    </div>
+                    <div>
+                        <label for="card_cvv">CVV</label>
+                        <input type="text" id="card_cvv" name="card_cvv" placeholder="123">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Pay Now</button>
+        </form>
+    </section>
 
 {% endblock %}

@@ -1,8 +1,5 @@
-import random
-import json
 from django.shortcuts import render, redirect
 from django.core.mail import send_mail
-from django.contrib import messages
 from django.http import JsonResponse
 
 def home(request):
@@ -30,68 +27,98 @@ def book(request):
         checkout = request.POST.get('checkout')
         guests = request.POST.get('guests')
 
-        # Generate random room number
-        room_ranges = {
-            'Single Room': (101, 115),
-            'Standard Room': (201, 220),
-            'Deluxe Room': (301, 315),
-            'Family Room': (401, 410),
-            'Presidential Suite': (501, 505),
+        print(f'Booking received: {full_name}, {email}, {room}')
+
+        request.session['booking'] = {
+            'full_name': full_name,
+            'email': email,
+            'phone': phone,
+            'room': room,
+            'stay_type': stay_type,
+            'checkin': checkin,
+            'checkout': checkout,
+            'guests': guests,
         }
-        low, high = room_ranges.get(room, (100, 200))
-        room_number = random.randint(low, high)
+        request.session.modified = True
+        return redirect('payment')
+
+    return render(request, 'core/book.html', {'room_name': room_name})
+
+
+def payment(request):
+    booking = request.session.get('booking', {})
+
+    prices = {
+        'Single Room':        {'Room Only': 5000,  'Bed & Breakfast': 6800,  'All-Inclusive': 9500},
+        'Standard Room':      {'Room Only': 8000,  'Bed & Breakfast': 10500, 'All-Inclusive': 14000},
+        'Deluxe Room':        {'Room Only': 18000, 'Bed & Breakfast': 22000, 'All-Inclusive': 28000},
+        'Family Room':        {'Room Only': 38000, 'Bed & Breakfast': 45000, 'All-Inclusive': 55000},
+        'Presidential Suite': {'Room Only': 70000, 'Bed & Breakfast': 82000, 'All-Inclusive': 98000},
+    }
+
+    room = booking.get('room', '')
+    stay_type = booking.get('stay_type', '')
+    amount = prices.get(room, {}).get(stay_type, 0)
+
+    if request.method == 'POST':
+        guest_name = booking.get('full_name')
+        guest_email = booking.get('email')
 
         guest_message = f"""
-Dear {full_name},
+Dear {guest_name},
 
-Thank you for choosing StayEase! Your booking is confirmed.
+Your payment has been received and your booking is confirmed!
 
 Booking Details:
 ----------------
-Room Number: {room_number}
-Room Type: {room}
+Room: {room}
 Stay Type: {stay_type}
-Check-in: {checkin}
-Check-out: {checkout}
-Guests: {guests}
+Check-in: {booking.get('checkin')}
+Check-out: {booking.get('checkout')}
+Guests: {booking.get('guests')}
+Amount Paid: KSh {amount:,}
+
+We look forward to welcoming you!
 
 Warm regards,
 StayEase Team
 Moyne Drive, Nyali, Mombasa
-info@stayease.co.ke
 +254 700 123 456
-        """
-
-        hotel_message = f"""
-New Booking Request:
-
-Name: {full_name}
-Email: {email}
-Phone: {phone}
-Room Number: {room_number}
-Room Type: {room}
-Stay Type: {stay_type}
-Check-in: {checkin}
-Check-out: {checkout}
-Guests: {guests}
         """
 
         try:
             send_mail(
-                subject='Booking Confirmation - StayEase',
+                subject='Booking Confirmed - StayEase',
                 message=guest_message,
                 from_email=None,
-                recipient_list=[email],
+                recipient_list=[guest_email],
             )
+
             send_mail(
-                subject=f'New Booking Request - {room} (Room {room_number})',
-                message=hotel_message,
+                subject=f'New Booking - {room}',
+                message=f'Guest: {guest_name}\nEmail: {guest_email}\nRoom: {room}\nStay: {stay_type}\nCheck-in: {booking.get("checkin")}\nCheck-out: {booking.get("checkout")}',
                 from_email=None,
                 recipient_list=['njeriregina213@gmail.com'],
             )
-            return JsonResponse({'success': True, 'room_number': room_number})
-
+            return redirect ('success')
+        
         except Exception as e:
-            return JsonResponse({'success': False, 'error': str(e)})
+            print(f'EMAIL ERROR: {e}')
+            return redirect('success')
 
-    return render(request, 'core/book.html', {'room_name': room_name})
+    return render(request, 'core/payment.html', {
+        'room': room,
+        'stay_type': stay_type,
+        'amount': f'KSh {amount:,}',
+        'guest_email': booking.get('email'),
+        'guest_name': booking.get('full_name'),
+    })
+
+
+def success(request):
+    booking = request.session.get('booking', {})
+    return render(request, 'core/success.html', {
+        'guest_name': booking.get('full_name'),
+        'room': booking.get('room'),
+        'guest_email': booking.get('email'),
+    })

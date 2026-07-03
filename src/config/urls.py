@@ -21,7 +21,8 @@ from core.views import rooms
 from core.views import about
 from core.views import contact
 from core.views import book
-
+from core.views import payment
+from core.views import success
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', home, name='home'),
@@ -29,5 +30,7 @@ urlpatterns = [
     path('about/', about, name='about'),
     path('contact/', contact, name='contact'),
     path('book/', book, name = 'book'),
+    path('payment/', payment, name = 'payment'),
+    path('success/', success, name = 'success'),
     
 ]

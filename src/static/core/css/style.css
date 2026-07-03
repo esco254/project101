@@ -479,6 +479,135 @@ footer {
     padding: 2rem;
 }
 
+/* ===== Payment Page ===== */
+.payment-section {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+}
+
+.payment-section h1 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
+
+.payment-amount {
+    font-size: 1.2rem;
+    margin: 0.5rem 0 1.5rem;
+}
+
+.payment-amount span {
+    color: var(--sea-blue);
+    font-weight: 700;
+}
+
+.payment-tabs {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.pay-tab {
+    padding: 0.5rem 1.5rem;
+    border: 1px solid var(--sea-blue);
+    border-radius: 20px;
+    background: #fff;
+    color: var(--sea-blue);
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.2s ease;
+}
+
+.pay-tab.active {
+    background: var(--sea-blue);
+    color: #fff;
+}
+
+.pay-panel {
+    display: none;
+    flex-direction: column;
+    gap: 0.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.pay-panel.active {
+    display: flex;
+}
+
+.pay-panel label {
+    font-weight: 500;
+    color: var(--deep-teal);
+}
+
+.pay-panel input {
+    padding: 0.75rem 1rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-family: 'Inter', sans-serif;
+    font-size: 0.95rem;
+}
+
+.pay-panel input:focus {
+    outline: 2px solid var(--sea-blue);
+    border-color: var(--sea-blue);
+}
+
+.pay-hint {
+    font-size: 0.85rem;
+    color: #666;
+}
+
+.card-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+/* ===== Success Page ===== */
+.success-section {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5rem 2rem;
+}
+
+.success-card {
+    text-align: center;
+    background: #fff;
+    padding: 3rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(11, 61, 76, 0.1);
+    max-width: 500px;
+}
+
+.success-icon {
+    width: 70px;
+    height: 70px;
+    background: var(--seafoam);
+    color: var(--deep-teal);
+    font-size: 2rem;
+    font-weight: 700;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1.5rem auto;
+}
+
+.success-card h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+}
+
+.success-card p {
+    margin-bottom: 0.75rem;
+    color: #444;
+}
+
+.success-card .btn {
+    margin-top: 1.5rem;
+}
+
 .spinner {
     width: 48px;
     height: 48px;

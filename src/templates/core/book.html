@@ -28,7 +28,7 @@
         <input type="tel" id="phone" name="phone" required>
 
         <label for="room">Room Type</label>
-        <select id="room" name="room">
+        <select id="room" name="room" required>
             <option value="">-- Select a Room --</option>
             <option value="Single Room" {% if room_name == "Single Room" %}selected{% endif %}>Single Room</option>
             <option value="Standard Room" {% if room_name == "Standard Room" %}selected{% endif %}>Standard Room</option>
@@ -38,7 +38,7 @@
         </select>
 
         <label for="stay_type">Stay Type</label>
-        <select id="stay_type" name="stay_type">
+        <select id="stay_type" name="stay_type" required>
             <option value="">-- Select Stay Type --</option>
             <option value="Room Only">Room Only</option>
             <option value="Bed & Breakfast">Bed & Breakfast</option>
@@ -59,47 +59,10 @@
             <p id="total-display">Fill in room, stay type, and dates to see your total.</p>
         </div>
 
-        <button type="button" class="btn" id="proceed-btn" onclick="showPayment()">Proceed to Payment</button>
+        <button type="submit" class="btn">Proceed to Payment</button>
     </form>
 
-    <!-- Payment Section -->
-    <div class="payment-section hidden" id="payment-section">
-        <h2>Complete Your Payment</h2>
-
-        <div class="payment-tabs">
-            <button class="pay-tab active" data-method="mpesa">M-Pesa</button>
-            <button class="pay-tab" data-method="card">Card</button>
-        </div>
-
-        <!-- M-Pesa -->
-        <div class="pay-form" id="mpesa-form">
-            <p class="pay-hint">Enter your M-Pesa registered phone number. You will receive a prompt to confirm payment.</p>
-            <label>Phone Number</label>
-            <input type="tel" id="mpesa-phone" placeholder="e.g. 0712 345 678">
-            <button class="btn" onclick="simulatePayment()">Pay via M-Pesa</button>
-        </div>
-
-        <!-- Card -->
-        <div class="pay-form hidden" id="card-form">
-            <label>Card Number</label>
-            <input type="text" placeholder="1234 5678 9012 3456" maxlength="19">
-            <label>Expiry Date</label>
-            <input type="text" placeholder="MM/YY" maxlength="5">
-            <label>CVV</label>
-            <input type="text" placeholder="123" maxlength="3">
-            <button class="btn" onclick="simulatePayment()">Pay with Card</button>
-        </div>
-
-        <!-- Processing -->
-        <div class="pay-processing hidden" id="processing">
-            <div class="spinner"></div>
-            <p>Processing your payment, please wait...</p>
-        </div>
-
-        <!-- Success -->
-        <div class="pay-success hidden" id="success-message"></div>
-    </div>
-
+    
 </section>
 
 <script>
