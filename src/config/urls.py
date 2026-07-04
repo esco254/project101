@@ -17,12 +17,11 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
-from core import views  
+from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-   path('send-mail/<int:booking_id>/', views.send_payment_email, name='send_mail'),
-   path('verify/<int:booking_id>/', views.check_verification_code, name='verify_code'),
-   path('qr/<int:booking_id>/', views.show_qr_code , name='show_qr_code'),
-   path('refund/<int:booking_id>/', views.process_refund, name='process_refund'),
+    path('send-mail/<int:booking_id>/', views.send_payment_email, name='send_mail'),
+    path('verify/<int:booking_id>/', views.check_verification_code, name='verify_code'),
+    path('refund/<int:booking_id>/', views.process_refund, name='process_refund'),
 ]

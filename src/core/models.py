@@ -1,39 +1,37 @@
+
 import uuid
 from django.db import models
-from django.contrib.auth.models import User
+from django.core.mail import send_mail
+from django.conf import settings
+
+class GuestProfile(models.Model):
+    user_name = models.CharField(max_length=100)
+    email = models.EmailField(unique=True, default="")
+    phone = models.CharField(max_length=15, default="")
+
+    def __str__(self):
+        return self.user_name
 
 class HotelRoom(models.Model):
-    ROOM_CATEGORIES = [
-        ('STANDARD', 'Standard'),
-        ('DELUXE', 'Deluxe'),
-        ('FAMILY', 'Family'),
-        ('SINGLE', 'Single'),
-        ('PRESIDENTIAL', 'Presidential'),
+    ROOM_TYPES = [
+        ('DELUXE', 'Deluxe Room'),
+        ('SUITE', 'Executive Suite'),
+        ('STANDARD', 'Standard Room'),
     ]
     room_number = models.CharField(max_length=10, unique=True)
-    room_type = models.CharField(max_length=20, choices=ROOM_CATEGORIES, default='STANDARD')
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    is_cleaned = models.BooleanField(default=True)
+    room_type = models.CharField(max_length=20, choices=ROOM_TYPES, default='STANDARD')
+    price_per_night = models.DecimalField(max_digits=8, decimal_places=2)
+    is_available = models.BooleanField(default=True)
 
     def __str__(self):
         return f"Room {self.room_number} ({self.get_room_type_display()})"
 
-
-class GuestProfile(models.Model):
-    user = models.OneToOneField(User, on_delete=models.CASCADE)
-    phone_number = models.CharField(max_length=20)
-
-    def __str__(self):
-        return f"{self.user.get_full_name()} ({self.user.email})"
-
-
 class Booking(models.Model):
-    guest_profile = models.ForeignKey(GuestProfile, on_delete=models.SET_NULL, null=True, blank=True)
-    guest_name = models.CharField(max_length=100)
-    room_number = models.CharField(max_length=10)
+    guest = models.ForeignKey(GuestProfile, on_delete=models.CASCADE, related_name='bookings', null=True, blank=True)
+    room = models.ForeignKey(HotelRoom, on_delete=models.CASCADE, related_name='bookings', null=True, blank=True)
     
-    checkin_date = models.DateTimeField()
-    days_booked = models.IntegerField(default=1)
+    check_in = models.DateField()
+    check_out = models.DateField()
     days_spent = models.IntegerField(default=0)
     
     is_payment_verified = models.BooleanField(default=False)
@@ -44,4 +42,41 @@ class Booking(models.Model):
     digital_access_token = models.UUIDField(default=uuid.uuid4, editable=False)
 
     def __str__(self):
-        return f"Booking for {self.guest_name} - Room {self.room_number}"
+        guest_display = self.guest.user_name if self.guest else "Unassigned"
+        return f"{guest_display} ({self.check_in})"
+
+    def save(self, *args, **kwargs):
+        if self.check_in and self.check_out:
+            self.days_spent = (self.check_out - self.check_in).days
+            
+        if self.is_payment_verified and not self.verification_code:
+            self.verification_code = str(uuid.uuid4().hex[:12]).upper()
+            self.send_confirmation_email_with_qr()
+            
+        if self.is_refunded and self.refund_amount == 0.00 and self.room:
+            self.refund_amount = self.room.price_per_night * self.days_spent
+            self.send_refund_email()
+            
+        super().save(*args, **kwargs)
+
+    def send_confirmation_email_with_qr(self):
+        if self.guest and self.guest.email:
+            qr_url = f"http://127.0.0.1:8000/verify/{self.verification_code}/"
+            subject = "Booking Confirmed!"
+            message = f"Hi {self.guest.user_name},\n\nYour booking is verified!\nUse this link to access your digital QR Key: {qr_url}"
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.guest.email], fail_silently=True)
+
+    def send_refund_email(self):
+        if self.guest and self.guest.email:
+            subject = "Refund Processed"
+            message = f"Hi {self.guest.user_name},\n\nYour booking cancellation is processed. A refund of {self.refund_amount} has been issued."
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.guest.email], fail_silently=True)
+
+class AccessLog(models.Model):
+    room = models.ForeignKey(HotelRoom, on_delete=models.CASCADE)
+    timestamp = models.DateTimeField(auto_now_add=True)
+    attempted_token = models.CharField(max_length=255)
+    is_successful = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"Room {self.room.room_number} - {self.timestamp}"           

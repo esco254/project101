@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'core',
+    'core.apps.CoreConfig',
 ]
 
 MIDDLEWARE = [
@@ -117,3 +117,11 @@ USE_TZ = True
 
 STATIC_URL = 'static/'
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# Email settings
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER =  'njeriregina213@gmail.com'  
+EMAIL_HOST_PASSWORD = 'lcmi ymgf wvnr tuok'          
+DEFAULT_FROM_EMAIL = 'StayEase <njeriregina213@gmail.com>' 
