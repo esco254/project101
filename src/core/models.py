@@ -33,10 +33,11 @@ class Staff(models.Model):
     
 class Room(models, models):
     ROOM_TYPE_CHOICES = [
-        ('single', 'Single')
-        ('family', 'Family')
+        ('single', 'Single Room')
+        ('standard', 'Standard Room')
+        ('family', 'Family Room')
         ('suite', 'Presidential Suite')
-        ('Deluxe', 'Deluxe')
+        ('Deluxe', 'Deluxe Room')
     ]
 
     room_number = models.CharsField(max_length=10, unique=True)
