@@ -1,5 +1,8 @@
+import uuid
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+from django.db.models import Q, F
 
 # Create your models here.
 class Staff(models.Model):
@@ -28,7 +31,7 @@ class Staff(models.Model):
     def is_admin(self):
         return self.role == 'admin'
     
-class Room(models, Model):
+class Room(models, models):
     ROOM_TYPE_CHOICES = [
         ('single', 'Single')
         ('family', 'Family')
@@ -38,17 +41,17 @@ class Room(models, Model):
 
     room_number = models.CharsField(max_length=10, unique=True)
     room_type = models.CharField(max_length=20, choices= ROOM_TYPE_CHOICES)
-    price_per_night = model.DecimalField(max_digits=10, decimal_places=2)
+    price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
     availability = models.BooleanField(default=True)
 
     def _str_(self):
         return f"Room {self.room_number} ({self.room_type()})"
     
 class Guest(models. Model):
-first_name = models.CharField(max_length=50)
-last_name = models.CharField(max_length=50)
-email = models.EmailField(unique=True)
-phone_number = models.DateTimeField(auto_now_add=True)
+    first_name = models.CharField(max_length=50)
+    last_name = models.CharField(max_length=50)
+    email = models.EmailField(unique=True)
+    phone_number = models.DateTimeField(auto_now_add=True)
 
 
 class Booking(models.Model):
@@ -69,9 +72,9 @@ status = models.CharField(max_length= 20, choices=STATUS_CHOICES, default= 'pend
 
 class Meta:
     constraints = [
-        models.CheckConstraint (
-        check = Q(check_out_gt=F('check_in'))
-         name= 'check_out_after_check_in')
+        models.CheckConstraint(
+        check = Q(check_out_gt=F('check_in')),
+          name= 'check_out_after_check_in',)
     ]
 
 def clean(self):
@@ -87,9 +90,8 @@ def clean(self):
             room = self.room,
             status_in = ['pending', 'confirmed', 'checked_in']
         ).exclude(pk=self.pk).filter(
-            check_in_lt=self.check_out
-            check_out_gt=self.check_in,
-            )
+            check_in_lt=self.check_out, 
+            check_out_gt=self.check_in,)
     
     if overlapping.exists():
         clash = overlapping.first()
