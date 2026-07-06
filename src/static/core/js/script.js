@@ -102,3 +102,86 @@ if (payTabs.length) {
         });
     });
 }
+   
+
+   
+    // Show payment section
+    function showPayment() {
+        const form = document.getElementById('booking-form');
+        const required = form.querySelectorAll('[required]');
+        let valid = true;
+
+        required.forEach(field => {
+            if (!field.value) {
+                field.style.border = '2px solid red';
+                valid = false;
+            } else {
+                field.style.border = '';
+            }
+        });
+
+        if (!valid) {
+            alert('Please fill in all required fields before proceeding.');
+            return;
+        }
+
+        document.getElementById('payment-section').classList.remove('hidden');
+        document.getElementById('payment-section').scrollIntoView({ behavior: 'smooth' });
+        document.getElementById('proceed-btn').disabled = true;
+        document.getElementById('proceed-btn').textContent = 'Details Saved ✓';
+
+        // Submit booking form via fetch and get room number back
+        fetch("{% url 'book' %}", {
+            method: 'POST',
+            body: new FormData(form),
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                window.bookingRoomNumber = data.room_number;
+            }
+        });
+    }
+
+    // Payment tabs
+    document.querySelectorAll('.pay-tab').forEach(tab => {
+        tab.addEventListener('click', function() {
+            document.querySelectorAll('.pay-tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.pay-form').forEach(f => f.classList.add('hidden'));
+            this.classList.add('active');
+            document.getElementById(this.dataset.method + '-form').classList.remove('hidden');
+        });
+    });
+
+    // Simulate payment
+    function simulatePayment() {
+        document.querySelectorAll('.pay-form').forEach(f => f.classList.add('hidden'));
+        document.getElementById('processing').classList.remove('hidden');
+
+        setTimeout(() => {
+            document.getElementById('processing').classList.add('hidden');
+            const successDiv = document.getElementById('success-message');
+
+            const room = document.getElementById('room').value;
+            const checkin = document.getElementById('checkin').value;
+            const checkout = document.getElementById('checkout').value;
+            const roomNumber = window.bookingRoomNumber || '---';
+
+            successDiv.innerHTML = `
+                <div class="success-icon">✓</div>
+                <h2>Payment Successful!</h2>
+                <p>Your booking is confirmed!</p>
+                <div class="success-details">
+                    <p><strong>Room:</strong> ${room} &mdash; Room ${roomNumber}</p>
+                    <p><strong>Check-in:</strong> ${checkin}</p>
+                    <p><strong>Check-out:</strong> ${checkout}</p>
+                </div>
+                <p class="success-note">A confirmation email with your room details has been sent to you.</p>
+                <a href="/" class="btn">Back to Home</a>
+            `;
+
+            successDiv.classList.remove('hidden');
+            successDiv.scrollIntoView({ behavior: 'smooth' });
+        }, 3000);
+    }
+ 

@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}StayEase{% endblock %}</title>
     <link rel="stylesheet" href="{% static 'core/css/style.css' %}">
+    
     {% block extra_css %}{% endblock %}
 </head>
 <body>
@@ -20,6 +21,9 @@
                 <li><a href="{% url 'rooms' %}">Browse Rooms</a></li>
                 <li><a href="{% url 'about' %}">About Us</a></li>
                 <li><a href="{% url 'contact' %}">Contact Us</a></li>
+                {% if user.is_staff %}
+                <li><a href="/admin/"></a>Admin</li>
+                {% endif %}
             </ul>
         </nav>
     </header>

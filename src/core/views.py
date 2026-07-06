@@ -82,7 +82,6 @@ def book(request):
     if request.method == 'POST':
         full_name = request.POST.get('full_name')
         email = request.POST.get('email')
-        phone = request.POST.get('phone')
         id_type = request.POST.get("id_type")
         id_number = request.POST.get("id_number")
         room = request.POST.get('room')
@@ -91,12 +90,14 @@ def book(request):
         checkout = request.POST.get('checkout')
         guests = request.POST.get('guests')
 
+        print("Guest email:", email)
         print(f'Booking received: {full_name}, {email}, {room}')
+
+        
 
         request.session['booking'] = {
             'full_name': full_name,
             'email': email,
-            'phone': phone,
             'id_type': id_type,
             'id_number': id_number,
             'room': room,
@@ -115,19 +116,20 @@ def payment(request):
     booking = request.session.get('booking', {})
 
     prices = {
-        'Single Room':        {'Room Only': 5000,  'Bed & Breakfast': 6800,  'All-Inclusive': 9500},
-        'Standard Room':      {'Room Only': 8000,  'Bed & Breakfast': 10500, 'All-Inclusive': 14000},
-        'Deluxe Room':        {'Room Only': 18000, 'Bed & Breakfast': 22000, 'All-Inclusive': 28000},
-        'Family Room':        {'Room Only': 38000, 'Bed & Breakfast': 45000, 'All-Inclusive': 55000},
+        'Single Room': {'Room Only': 5000, 'Bed & Breakfast': 6800, 'All-Inclusive': 9500},
+        'Standard Room': {'Room Only': 8000, 'Bed & Breakfast': 10500, 'All-Inclusive': 14000},
+        'Deluxe Room': {'Room Only': 18000, 'Bed & Breakfast': 22000, 'All-Inclusive': 28000},
+        'Family Room': {'Room Only': 38000, 'Bed & Breakfast': 45000, 'All-Inclusive': 55000},
         'Presidential Suite': {'Room Only': 70000, 'Bed & Breakfast': 82000, 'All-Inclusive': 98000},
     }
 
     room = booking.get('room', '')
     stay_type = booking.get('stay_type', '')
-    checkin = booking.get ('checkin', '')
+    checkin = booking.get('checkin', '')
     checkout = booking.get('checkout', '')
 
     from datetime import datetime
+
     if checkin and checkout:
         checkin_date = datetime.strptime(checkin, '%Y-%m-%d')
         checkout_date = datetime.strptime(checkout, '%Y-%m-%d')
@@ -136,62 +138,119 @@ def payment(request):
         nights = 1
 
     per_night = prices.get(room, {}).get(stay_type, 0)
-    amount= per_night * nights
+    amount = per_night * nights
 
-    room_number = random.randint(233, 990)
+    # Room allocation
+    room_info = {
+        "Single Room": {
+            "floor": "1st Floor",
+            "rooms": list(range(101, 121))
+        },
+        "Standard Room": {
+            "floor": "2nd Floor",
+            "rooms": list(range(201, 221))
+        },
+        "Deluxe Room": {
+            "floor": "3rd Floor",
+            "rooms": list(range(301, 321))
+        },
+        "Family Room": {
+            "floor": "4th Floor",
+            "rooms": list(range(401, 421))
+        },
+        "Presidential Suite": {
+            "floor": "5th Floor",
+            "rooms": list(range(501, 521))
+        },
+    }
 
+    selected_room = room_info.get(room)
+
+    if selected_room:
+        room_number = random.choice(selected_room["rooms"])
+        floor = selected_room["floor"]
+    else:
+        room_number = "N/A"
+        floor = "N/A"
 
     if request.method == 'POST':
         guest_name = booking.get('full_name')
         guest_email = booking.get('email')
-        booking_reference = f"BK -{random.randint(100000,999999)}"
-        payment_reference= f"PAY- {random.randint(100000, 999999)}"
+
+        print("Sending confirmation email to:", guest_email)
+
+        booking_reference = f"BK-{random.randint(100000,999999)}"
+        payment_reference = f"PAY-{random.randint(100000,999999)}"
 
         guest_message = f"""
 Dear {guest_name},
 
 Thank you for choosing StayEase!
 
-Your payment has been received successfully and your 
-booking has been confirmed.
+Your payment has been received successfully and your booking has been confirmed.
+
 =======================================================
-                     BOOKING DETAILS
+                 BOOKING DETAILS
 =======================================================
-Booking Refference: {booking_reference}
+
+Booking Reference: {booking_reference}
 Payment Reference: {payment_reference}
+
 Room Type: {room}
+Floor: {floor}
 Room Number: {room_number}
+
 {booking.get('id_type')}: {booking.get('id_number')}
+
 Stay Type: {stay_type}
 Check-in Date: {booking.get('checkin')}
-check-out Date: {booking.get('checkout')}
+Check-out Date: {booking.get('checkout')}
 Guests: {booking.get('guests')}
+
 Amount Paid: Ksh {amount:,}
 Payment Status: Successful
 
---------------------------------------------------------
+-------------------------------------------------------
 
-Check-in Time: From 12.00 PM
+Check-in Time: From 12:00 PM
 Check-out Time: Before 11:00 AM
 
-Please present this confirmation email during 
-check-in together with a valid identification document.
+Please present this confirmation email together with a valid identification document during check-in.
 
-If you have any questions before your arrival,
-feel free to contact us.
+If you have any questions before your arrival:
 
 Phone: +254 700 123 456
 Email: info@stayease.co.ke
 
-We look foward to welcoming you
-to StayEase!
+We look forward to welcoming you to StayEase!
 
 Warm regards,
 
-StayEase Team,
+StayEase Team
 Moyne Drive, Nyali, Mombasa
+"""
 
-        """
+        hotel_message = f"""
+A new booking has been confirmed.
+
+Guest Name: {guest_name}
+Guest Email: {guest_email}
+
+Room Type: {room}
+Floor: {floor}
+Room Number: {room_number}
+
+Stay Type: {stay_type}
+Check-in: {booking.get('checkin')}
+Check-out: {booking.get('checkout')}
+Guests: {booking.get('guests')}
+
+Booking Reference: {booking_reference}
+Payment Reference: {payment_reference}
+
+Amount Paid: Ksh {amount:,}
+Payment Status: Successful (Simulated)
+"""
 
         try:
             send_mail(
@@ -200,35 +259,16 @@ Moyne Drive, Nyali, Mombasa
                 from_email=None,
                 recipient_list=[guest_email],
             )
-            hotel_message = f"""
-            A new booking has ben confirmed .
-            Guest Name: {guest_name}
-            Guest Email: {guest_email}
-            Room: {room}
-            Room Number: {room_number}
-            Stay Type: {stay_type}
-            Check-in: {booking.get('checkin')}
-            Check-out: {booking.get('checkout')}
-            Guests: {booking.get('guests')}
-
-            Booking Reference: {booking_reference}
-            Payment Reference: {payment_reference}
-            Payment Status: Successful (simulated)
-
-            Amount Paid: Ksh {amount:,}
-            """
-
 
             send_mail(
                 subject=f'New Booking - {room}',
-                message= hotel_message,
+                message=hotel_message,
                 from_email=None,
                 recipient_list=['njeriregina213@gmail.com'],
             )
 
+            return redirect('success')
 
-            return redirect ('success')
-        
         except Exception as e:
             print(f'EMAIL ERROR: {e}')
             return redirect('success')
@@ -240,7 +280,6 @@ Moyne Drive, Nyali, Mombasa
         'guest_email': booking.get('email'),
         'guest_name': booking.get('full_name'),
     })
-
 
 def success(request):
     booking = request.session.get('booking', {})
