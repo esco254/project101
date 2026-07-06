@@ -64,12 +64,12 @@ class Booking(models.Model):
         ('cancelled', 'Cancelled')
     ]
 
-reference = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
-room = models.ForeignKey(Room, on_delete= models.CASCADE, related_name= 'bookings')
-guest = models.ForeignKey(Guest, on_delete= models.CASCADE, related_name= 'bookings')
-check_in = models.DateField()
-check_out = models.DateField()
-status = models.CharField(max_length= 20, choices=STATUS_CHOICES, default= 'pending')
+    reference = models.UUIDField(default=uuid.uuid4, editable=False, unique=True)
+    room = models.ForeignKey(Room, on_delete= models.CASCADE, related_name= 'bookings')
+    guest = models.ForeignKey(Guest, on_delete= models.CASCADE, related_name= 'bookings')
+    check_in = models.DateField()
+    check_out = models.DateField()
+    status = models.CharField(max_length= 20, choices= STATUS_CHOICES, default= 'pending')
 
 class Meta:
     constraints = [
@@ -129,12 +129,12 @@ class Payment (models.Model):
         ('card', 'Card')
     ]
 
-booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name= 'payments')
-amount = models.DecimalField(max_digits=10, decimal_places=2)
-payment_method = models.CharField(
+    booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name= 'payments')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(
     max_length=20, choices=PAYMENT_CHOICES, default= 'mpesa')
-status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
-payment_date = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(max_length=20, choices= STATUS_CHOICES, default='pending')
+    payment_date = models.DateTimeField(auto_now_add=True)
 
 def _str_(self):
     return f"KES {self.amount} - {self.booking}"
