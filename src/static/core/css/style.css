@@ -70,9 +70,13 @@ nav ul li a:focus-visible {
 
 
 .hero {
-    background: linear-gradient(rgba(11, 61, 76, 0.6), rgba(11, 61, 76, 0.6));
+    background: linear-gradient(rgba(11, 61, 76, 0.6), rgba(11, 61, 76, 0.6)) ;
     color: #fff;
-    padding: 6rem 3rem;
+    padding: 2rem;
+    min-height: 100vh;
+    justify-content: center;
+    align-self: center;
+    display: flex;
     text-align: center;
 }
 
@@ -202,6 +206,22 @@ section {
 
 .contact-info h2:first-child {
     margin-top: 0;
+}
+
+.btn {
+    display: inline-block;
+    background-color: #E8B14F;
+    color: #0B3D4C;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+}
+.btn:hover{
+    background-color: #d79b2c;
+    transform: translateY(-3px);
+    
 }
 
 .contact-form h2 {
