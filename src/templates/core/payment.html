@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Payment - StayEase{% endblock %}
+
+{% block content %}
+
+    <section class="payment-section">
+        <h1>Complete Your Payment</h1>
+        <p>You're booking: <strong>{{ room }}</strong> — {{ stay_type }}</p>
+        <p class="payment-amount">Total: <span>{{ amount }}</span></p>
+
+        <div class="payment-tabs">
+            <button class="pay-tab active" data-tab="mpesa">M-Pesa</button>
+            <button class="pay-tab" data-tab="card">Card</button>
+        </div>
+
+       <form method="post" action="{% url 'payment' %}" class="payment-form">
+            {% csrf_token %}
+            <input type="hidden" name="room" value="{{ room }}">
+            <input type="hidden" name="stay_type" value="{{ stay_type }}">
+            <input type="hidden" name="amount" value="{{ amount }}">
+            <input type="hidden" name="guest_email" value="{{ guest_email }}">
+            <input type="hidden" name="guest_name" value="{{ guest_name }}">
+
+            <div class="pay-panel active" id="mpesa">
+                <label for="mpesa_number">M-Pesa Phone Number</label>
+                <input type="tel" id="mpesa_number" name="mpesa_number" placeholder="e.g. 0712 345 678">
+                <p class="pay-hint">You will receive a prompt on your phone to confirm payment.</p>
+            </div>
+
+            <div class="pay-panel" id="card">
+                <label for="card_name">Name on Card</label>
+                <input type="text" id="card_name" name="card_name" placeholder="Full name">
+
+                <label for="card_number">Card Number</label>
+                <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456">
+
+                <div class="card-row">
+                    <div>
+                        <label for="card_expiry">Expiry Date</label>
+                        <input type="text" id="card_expiry" name="card_expiry" placeholder="MM/YY">
+                    </div>
+                    <div>
+                        <label for="card_cvv">CVV</label>
+                        <input type="text" id="card_cvv" name="card_cvv" placeholder="123">
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="btn">Pay Now</button>
+        </form>
+    </section>
+
+{% endblock %}

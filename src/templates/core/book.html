@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Book Now - StayEase{% endblock %}
+
+{% block content %}
+
+{% if messages %}
+    {% for message in messages %}
+        <div class="alert {{ message.tags }}">{{ message }}</div>
+    {% endfor %}
+{% endif %}
+
+<section class="booking-section">
+    <h1>Book Your Stay</h1>
+    <p>Fill in your details below to reserve your room at StayEase.</p>
+
+    <form method="post" class="booking-form" id="booking-form">
+        {% csrf_token %}
+
+        <label for="full_name">Full Name</label>
+        <input
+         type="text"  
+         name="full_name" 
+         placeholder="Full Name"
+         pattern="[A-Za-z ]{2,50}"
+         title="Please enter a valid name "
+         required>
+        
+
+        <label for="email">Email Address</label>
+        <input 
+        type="email" 
+        name="email"
+        placeholder="Email Address"
+        required>
+
+        <label for="id_type">Identification</label>   
+        <select name="id_type" required>
+            <option value="">Select Identification</option>
+            <option value="National ID">National ID</option>
+            <option value="Passport">Passport</option>
+        </select>
+
+        <input
+            type="text"
+            name="id_number"
+            placeholder="Enter ID or Passport Number"
+            required>    
+
+        <label for="room">Room Type</label>
+        <select id="room" name="room" required>
+            <option value="">-- Select a Room --</option>
+            <option value="Single Room" {% if room_name == "Single Room" %}selected{% endif %}>Single Room</option>
+            <option value="Standard Room" {% if room_name == "Standard Room" %}selected{% endif %}>Standard Room</option>
+            <option value="Deluxe Room" {% if room_name == "Deluxe Room" %}selected{% endif %}>Deluxe Room</option>
+            <option value="Family Room" {% if room_name == "Family Room" %}selected{% endif %}>Family Room</option>
+            <option value="Presidential Suite" {% if room_name == "Presidential Suite" %}selected{% endif %}>Presidential Suite</option>
+        </select>
+
+        <label for="stay_type">Stay Type</label>
+        <select id="stay_type" name="stay_type" required>
+            <option value="">-- Select Stay Type --</option>
+            <option value="Room Only">Room Only</option>
+            <option value="Bed & Breakfast">Bed & Breakfast</option>
+            <option value="All-Inclusive">All-Inclusive</option>
+        </select>
+
+        <label for="checkin">Check-in Date</label>
+        <input type="date" id="checkin" name="checkin" required>
+
+        <label for="checkout">Check-out Date</label>
+        <input type="date" id="checkout" name="checkout" required>
+
+        <label for="guests">Number of Guests</label>
+        <input type="number" id="guests" name="guests" min="1" max="6" required>
+
+        <div class="booking-total">
+            <h3>Estimated Total</h3>
+            <p id="total-display">Fill in room, stay type, and dates to see your total.</p>
+        </div>
+
+        <button type="submit" class="btn">Proceed to Payment</button>
+    </form>
+
+    
+</section>
+
+
+
+{% endblock %}

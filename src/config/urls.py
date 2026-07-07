@@ -17,11 +17,26 @@ Including another URLconf
 
 from django.contrib import admin
 from django.urls import path
+from core.views import home
+from core.views import rooms
+from core.views import about
+from core.views import contact
+from core.views import book
+from core.views import payment
+from core.views import success
 from core import views
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('', home, name='home'),
+    path('rooms/', rooms, name='rooms'),
+    path('about/', about, name='about'),
+    path('contact/', contact, name='contact'),
+    path('book/', book, name = 'book'),
+    path('payment/', payment, name = 'payment'),
+    path('success/', success, name = 'success'),
+    
     path('send-mail/<int:booking_id>/', views.send_payment_email, name='send_mail'),
-    path('verify/<int:booking_id>/', views.check_verification_code, name='verify_code'),
+    path('verify/<int:booking_id>/', views.verify_payment_code, name='verify_code'),
     path('refund/<int:booking_id>/', views.process_refund, name='process_refund'),
 ]
