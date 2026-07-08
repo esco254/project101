@@ -91,6 +91,7 @@ function calculateTotal() {
 // Payment tab switching
 const payTabs = document.querySelectorAll('.pay-tab');
 const payPanels = document.querySelectorAll('.pay-panel');
+const paymentMethodInput = document.getElementById('payment_method_input');
 
 if (payTabs.length) {
     payTabs.forEach(tab => {
@@ -99,7 +100,50 @@ if (payTabs.length) {
             payPanels.forEach(p => p.classList.remove('active'));
             this.classList.add('active');
             document.getElementById(this.dataset.tab).classList.add('active');
+            if (paymentMethodInput) {
+                paymentMethodInput.value = this.dataset.tab;
+            }
         });
+    });
+}
+// Validate card expiry date before allowing submission
+const paymentForm = document.querySelector('.payment-form');
+
+if (paymentForm) {
+    paymentForm.addEventListener('submit', function (e) {
+        const activeTab = document.querySelector('.pay-tab.active');
+        const selectedMethod = activeTab ? activeTab.dataset.tab : 'cash';
+
+        if (selectedMethod === 'card') {
+            const expiryInput = document.getElementById('card_expiry');
+            const expiryValue = expiryInput.value.trim();
+
+            const match = expiryValue.match(/^(\d{2})\/(\d{2})$/);
+            if (!match) {
+                e.preventDefault();
+                alert('Please enter a valid expiry date in MM/YY format.');
+                return;
+            }
+
+            const expMonth = parseInt(match[1], 10);
+            const expYear = parseInt(match[2], 10) + 2000;
+
+            if (expMonth < 1 || expMonth > 12) {
+                e.preventDefault();
+                alert('Please enter a valid month (01-12) for the expiry date.');
+                return;
+            }
+
+            const now = new Date();
+            const currentMonth = now.getMonth() + 1;
+            const currentYear = now.getFullYear();
+
+            if (expYear < currentYear || (expYear === currentYear && expMonth < currentMonth)) {
+                e.preventDefault();
+                alert('This card has expired. Please enter a valid expiry date.');
+                return;
+            }
+        }
     });
 }
    

@@ -63,12 +63,9 @@ class Booking(models.Model):
     days_spent = models.IntegerField(default=0)
 
     is_payment_verified = models.BooleanField(default=False)
-    is_refunded = models.BooleanField(default=False)
-    refund_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
 
     verification_code = models.CharField(max_length=12, blank=True, null=True)
-    digital_access_token = models.UUIDField(default=uuid.uuid4, editable=False)
-
+   
     def __str__(self):
         guest_display = self.guest.user_name if self.guest else "Unassigned"
         return f"{guest_display} ({self.check_in})"
@@ -81,9 +78,6 @@ class Booking(models.Model):
             self.verification_code = str(uuid.uuid4().hex[:12]).upper()
             self.send_confirmation_email_with_qr()
 
-        if self.is_refunded and self.refund_amount == 0.00 and self.room:
-            self.refund_amount = self.room.price_per_night * self.days_spent
-            self.send_refund_email()
 
         super().save(*args, **kwargs)
 
@@ -94,24 +88,16 @@ class Booking(models.Model):
             message = f"Hi {self.guest.user_name},\n\nYour booking is verified!\nUse this link to access your digital QR Key: {qr_url}"
             send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.guest.email], fail_silently=True)
 
-    def send_refund_email(self):
-        if self.guest and self.guest.email:
-            subject = "Refund Processed"
-            message = f"Hi {self.guest.user_name},\n\nYour booking cancellation is processed. A refund of {self.refund_amount} has been issued."
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.guest.email], fail_silently=True)
-
 
 class Payment(models.Model):
     STATUS_CHOICES = [
         ('pending', 'Pending'),
         ('completed', 'Completed'),
         ('failed', 'Failed'),
-        ('refunded', 'Refunded'),
     ]
 
     PAYMENT_CHOICES = [
         ('cash', 'Cash'),
-        ('mpesa', 'M-Pesa'),
         ('card', 'Card'),
     ]
 

@@ -36,7 +36,5 @@ urlpatterns = [
     path('payment/', payment, name = 'payment'),
     path('success/', success, name = 'success'),
     
-    path('send-mail/<int:booking_id>/', views.send_payment_email, name='send_mail'),
     path('verify/<int:booking_id>/', views.verify_payment_code, name='verify_code'),
-    path('refund/<int:booking_id>/', views.process_refund, name='process_refund'),
 ]

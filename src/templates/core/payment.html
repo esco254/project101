@@ -6,12 +6,12 @@
 
     <section class="payment-section">
         <h1>Complete Your Payment</h1>
-        <p>You're booking: <strong>{{ room }}</strong> — {{ stay_type }}</p>
+        <p>You're booking: <strong>{{ room }}</strong> &mdash; {{ stay_type }}</p>
         <p class="payment-amount">Total: <span>{{ amount }}</span></p>
 
         <div class="payment-tabs">
-            <button class="pay-tab active" data-tab="mpesa">M-Pesa</button>
-            <button class="pay-tab" data-tab="card">Card</button>
+            <button type="button" class="pay-tab active" data-tab="cash">Cash</button>
+            <button type="button" class="pay-tab" data-tab="card">Card</button>
         </div>
 
        <form method="post" action="{% url 'payment' %}" class="payment-form">
@@ -21,11 +21,10 @@
             <input type="hidden" name="amount" value="{{ amount }}">
             <input type="hidden" name="guest_email" value="{{ guest_email }}">
             <input type="hidden" name="guest_name" value="{{ guest_name }}">
+            <input type="hidden" name="payment_method" id="payment_method_input" value="cash">
 
-            <div class="pay-panel active" id="mpesa">
-                <label for="mpesa_number">M-Pesa Phone Number</label>
-                <input type="tel" id="mpesa_number" name="mpesa_number" placeholder="e.g. 0712 345 678">
-                <p class="pay-hint">You will receive a prompt on your phone to confirm payment.</p>
+            <div class="pay-panel active" id="cash">
+                <p class="pay-hint">You will pay in cash at reception upon check-in.</p>
             </div>
 
             <div class="pay-panel" id="card">

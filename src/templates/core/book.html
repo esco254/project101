@@ -68,9 +68,24 @@
 
         <label for="checkin">Check-in Date</label>
         <input type="date" id="checkin" name="checkin" required>
-
         <label for="checkout">Check-out Date</label>
         <input type="date" id="checkout" name="checkout" required>
+        
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const today = new Date().toISOString().split('T')[0];
+    const checkinInput = document.getElementById('checkin');
+    const checkoutInput = document.getElementById('checkout');
+
+    checkinInput.setAttribute('min', today);
+    checkoutInput.setAttribute('min', today);
+
+    checkinInput.addEventListener('change', function() {
+      checkoutInput.setAttribute('min', checkinInput.value);
+    });
+  });
+</script>
 
         <label for="guests">Number of Guests</label>
         <input type="number" id="guests" name="guests" min="1" max="6" required>

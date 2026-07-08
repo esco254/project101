@@ -60,27 +60,33 @@ class GuestProfileAdmin(admin.ModelAdmin):
 class PaymentInLine(admin.TabularInline):
     model = Payment
     extra = 0
-    readonly_fields = ['payment_date']
+    can_delete = False
+    readonly_fields = ['amount', 'payment_method', 'status', 'payment_date']
     fields = ['amount', 'payment_method', 'status', 'payment_date']
+
+    def has_add_permission(self, request, obj=None):
+        return False
 
 
 # Booking
 @admin.register(Booking)
 class BookingAdmin(admin.ModelAdmin):
     list_display = ['guest', 'room', 'check_in', 'check_out',
-                     'is_payment_verified', 'is_refunded']
-    list_filter = ['is_payment_verified', 'is_refunded', 'check_in']
+                     'is_payment_verified']
+    list_filter = ['is_payment_verified', 'check_in']
     search_fields = ['guest__user_name', 'room__room_number']
-    readonly_fields = ['digital_access_token', 'verification_code', 'days_spent']
+    readonly_fields = ['guest', 'room', 'check_in', 'check_out', 'days_spent','verification_code']
     date_hierarchy = 'check_in'
     ordering = ['-check_in']
     inlines = [PaymentInLine]
     fieldsets = [
         ('Room & Guest', {'fields': ['room', 'guest']}),
         ('Dates', {'fields': ['check_in', 'check_out', 'days_spent']}),
-        ('Payment & Access', {'fields': ['is_payment_verified', 'verification_code',
-                                          'is_refunded', 'refund_amount', 'digital_access_token']}),
+        ('Payment & Access', {'fields': ['is_payment_verified', 'verification_code']}),
     ]
+
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 
 # Payment
@@ -89,9 +95,11 @@ class PaymentAdmin(admin.ModelAdmin):
     list_display = ['id', 'booking', 'amount', 'payment_method', 'status', 'payment_date']
     list_filter = ['status', 'payment_method']
     search_fields = ['booking__guest__user_name']
-    readonly_fields = ['payment_date']
+    readonly_fields = ['booking', 'amount', 'payment_method', 'payment_date']
     ordering = ['-payment_date']
 
+    def has_delete_permission(self, request, obj=None):
+        return False
 
 # Admin site branding
 admin.site.site_header = 'StayEase Hotel - Admin'
