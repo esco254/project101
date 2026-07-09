@@ -237,12 +237,12 @@ def payment(request):
         )
 
         payment_method = request.POST.get('payment_method', 'cash')
-        Payment.objects.create(
-            booking=new_booking,
-            amount=amount,
-            payment_method=payment_method,
-            status='completed',
-)
+#         Payment.objects.create(
+#             booking=new_booking,
+#             amount=amount,
+#             payment_method=payment_method,
+#             status='completed',
+# )
 
         if room_obj:
             room_obj.availability = False
@@ -376,29 +376,49 @@ def verify_payment_code(request, booking_id):
         return JsonResponse({"message": "Success! Payment verified and room unlocked."})
     else:
         return JsonResponse({"message": "Error! Wrong verification code."})
+    
+
+    
+from django.core.exceptions import ValidationError
+from django.contrib import messages
+from django.shortcuts import render, redirect
+
+def login_view(request):
+    if request.method == 'POST':
+        email_input = request.POST.get('email', '').strip()
+        
+        # --- THE STRICT EMAIL SYNTAX VALIDATOR ---
+        try:
+            validate_email(email_input)
+        except ValidationError:
+            # If it's nonsense, reload the page with an error message
+            messages.error(request, "Invalid email format. Please enter a valid address (e.g., name@domain.com).")
+            return render(request, 'login.html')
+            
+        # Your existing code for checking passwords and logging the user in goes here...
 
 
-def scan_door(request, booking_id):
-    booking = Booking.objects.get(id=booking_id)
+# def scan_door(request, booking_id):
+#     booking = Booking.objects.get(id=booking_id)
 
-    if booking.days_spent >= booking.days_booked:
-        return JsonResponse({"status": "Denied", "message": "Your stay has expired!"})
-    else:
-        return JsonResponse({"status": "Allowed"})
+#     if booking.days_spent >= booking.days_booked:
+#         return JsonResponse({"status": "Denied", "message": "Your stay has expired!"})
+#     else:
+#         return JsonResponse({"status": "Allowed"})
 
 
-def check_door_access(request, booking_id):
-    booking = Booking.objects.get(id=booking_id)
-    user_pin = request.GET.get('pin')
+# def check_door_access(request, booking_id):
+#     booking = Booking.objects.get(id=booking_id)
+#     user_pin = request.GET.get('pin')
 
-    current_time = timezone.now()
-    checkout_limit = timezone.datetime.combine(
-        booking.check_out, timezone.datetime.min.time()
-    ) + timezone.timedelta(hours=11, minutes=30)
+#     current_time = timezone.now()
+#     checkout_limit = timezone.datetime.combine(
+#         booking.check_out, timezone.datetime.min.time()
+#     ) + timezone.timedelta(hours=11, minutes=30)
 
-    if user_pin == booking.verification_code and current_time.timestamp() <= checkout_limit.timestamp():
-        AccessLog.objects.create(room=booking.room, attempted_token=user_pin, is_successful=True)
-        return HttpResponse("Access has been Granted.")
-    else:
-        AccessLog.objects.create(room=booking.room, attempted_token=user_pin, is_successful=False)
-        return HttpResponse("Access has been Denied.", status=403)
+#     if user_pin == booking.verification_code and current_time.timestamp() <= checkout_limit.timestamp():
+#         AccessLog.objects.create(room=booking.room, attempted_token=user_pin, is_successful=True)
+#         return HttpResponse("Access has been Granted.")
+#     else:
+#         AccessLog.objects.create(room=booking.room, attempted_token=user_pin, is_successful=False)
+#         return HttpResponse("Access has been Denied.", status=403)

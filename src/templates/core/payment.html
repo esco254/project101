@@ -9,10 +9,10 @@
         <p>You're booking: <strong>{{ room }}</strong> &mdash; {{ stay_type }}</p>
         <p class="payment-amount">Total: <span>{{ amount }}</span></p>
 
-        <div class="payment-tabs">
+        <!-- <div class="payment-tabs">
             <button type="button" class="pay-tab active" data-tab="cash">Cash</button>
             <button type="button" class="pay-tab" data-tab="card">Card</button>
-        </div>
+        </div> -->
 
        <form method="post" action="{% url 'payment' %}" class="payment-form">
             {% csrf_token %}
@@ -21,27 +21,27 @@
             <input type="hidden" name="amount" value="{{ amount }}">
             <input type="hidden" name="guest_email" value="{{ guest_email }}">
             <input type="hidden" name="guest_name" value="{{ guest_name }}">
-            <input type="hidden" name="payment_method" id="payment_method_input" value="cash">
+            <!-- <input type="hidden" name="payment_method" id="payment_method_input" value="cash"> -->
 
-            <div class="pay-panel active" id="cash">
+            <!-- <div class="pay-panel active" id="cash">
                 <p class="pay-hint">You will pay in cash at reception upon check-in.</p>
-            </div>
+            </div> -->
 
-            <div class="pay-panel" id="card">
+            
                 <label for="card_name">Name on Card</label>
-                <input type="text" id="card_name" name="card_name" placeholder="Full name">
+                <input type="text" id="card_name" name="card_name" placeholder="Full name" required>
 
                 <label for="card_number">Card Number</label>
-                <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456">
+                <input type="text" id="card_number" name="card_number" placeholder="1234 5678 9012 3456" maxlength="19" required>
 
                 <div class="card-row">
                     <div>
                         <label for="card_expiry">Expiry Date</label>
-                        <input type="text" id="card_expiry" name="card_expiry" placeholder="MM/YY">
+                        <input type="text" id="card_expiry" name="card_expiry" placeholder="MM/YY" maxlength="5" required>
                     </div>
                     <div>
                         <label for="card_cvv">CVV</label>
-                        <input type="text" id="card_cvv" name="card_cvv" placeholder="123">
+                        <input type="text" id="card_cvv" name="card_cvv" placeholder="123" maxlength="3" required>
                     </div>
                 </div>
             </div>

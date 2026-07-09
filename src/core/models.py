@@ -1,4 +1,4 @@
-import uuid
+
 from django.db import models
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
@@ -74,19 +74,19 @@ class Booking(models.Model):
         if self.check_in and self.check_out:
             self.days_spent = (self.check_out - self.check_in).days
 
-        if self.is_payment_verified and not self.verification_code:
-            self.verification_code = str(uuid.uuid4().hex[:12]).upper()
-            self.send_confirmation_email_with_qr()
+        # if self.is_payment_verified and not self.verification_code:
+        #     self.verification_code = str(uuid.uuid4().hex[:12]).upper()
+        #     self.send_confirmation_email_with_qr()
 
 
-        super().save(*args, **kwargs)
+        # super().save(*args, **kwargs)
 
-    def send_confirmation_email_with_qr(self):
-        if self.guest and self.guest.email:
-            qr_url = f"http://127.0.0.1:8000/verify/{self.verification_code}/"
-            subject = "Booking Confirmed!"
-            message = f"Hi {self.guest.user_name},\n\nYour booking is verified!\nUse this link to access your digital QR Key: {qr_url}"
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.guest.email], fail_silently=True)
+    # def send_confirmation_email_with_qr(self):
+    #     if self.guest and self.guest.email:
+    #         qr_url = f"http://127.0.0.1:8000/verify/{self.verification_code}/"
+    #         subject = "Booking Confirmed!"
+    #         message = f"Hi {self.guest.user_name},\n\nYour booking is verified!\nUse this link to access your digital QR Key: {qr_url}"
+    #         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [self.guest.email], fail_silently=True)
 
 
 class Payment(models.Model):
@@ -98,12 +98,12 @@ class Payment(models.Model):
 
     PAYMENT_CHOICES = [
         ('cash', 'Cash'),
-        ('card', 'Card'),
+        # ('card', 'Card'),
     ]
 
     booking = models.ForeignKey(Booking, on_delete=models.CASCADE, related_name='payments')
     amount = models.DecimalField(max_digits=10, decimal_places=2)
-    payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='mpesa')
+    payment_method = models.CharField(max_length=20, choices=PAYMENT_CHOICES, default='card')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
     payment_date = models.DateTimeField(auto_now_add=True)
 

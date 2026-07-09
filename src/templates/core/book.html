@@ -27,44 +27,47 @@
          title="Please enter a valid name "
          required>
         
-
-        <label for="email">Email Address</label>
         <input 
-        type="email" 
-        name="email"
-        placeholder="Email Address"
-        required>
+    type="email" 
+    name="email"
+    placeholder="Email Address"
+    pattern="[a-zA-Z0-9._%+\-]+@gmail\.com"
+    title="Please enter a valid Gmail address (@gmail.com only)"
+    required>
 
-        <label for="id_type">Identification</label>   
-        <select name="id_type" required>
-            <option value="">Select Identification</option>
-            <option value="National ID">National ID</option>
-            <option value="Passport">Passport</option>
-        </select>
+    <label for="id_type">Identification</label>
+<select id="id_type" name="id_type" required>
+    <option value="">Select Identification</option>
+    <option value="National ID">National ID</option>
+    <option value="Passport">Passport</option>
+</select>
 
-        <input
-            type="text"
-            name="id_number"
-            placeholder="Enter ID or Passport Number"
-            required>    
+<input type="text" id="id_number" name="id_number" 
+       placeholder="Enter ID or Passport Number" required>
 
-        <label for="room">Room Type</label>
-        <select id="room" name="room" required>
-            <option value="">-- Select a Room --</option>
-            <option value="Single Room" {% if room_name == "Single Room" %}selected{% endif %}>Single Room</option>
-            <option value="Standard Room" {% if room_name == "Standard Room" %}selected{% endif %}>Standard Room</option>
-            <option value="Deluxe Room" {% if room_name == "Deluxe Room" %}selected{% endif %}>Deluxe Room</option>
-            <option value="Family Room" {% if room_name == "Family Room" %}selected{% endif %}>Family Room</option>
-            <option value="Presidential Suite" {% if room_name == "Presidential Suite" %}selected{% endif %}>Presidential Suite</option>
-        </select>
+<label for="room_display">Room Type</label>
+<input 
+    type="text" 
+    id="room_display" 
+    name="room_display"
+    value="{{ room_name }}" 
+    disabled>
 
-        <label for="stay_type">Stay Type</label>
-        <select id="stay_type" name="stay_type" required>
-            <option value="">-- Select Stay Type --</option>
-            <option value="Room Only">Room Only</option>
-            <option value="Bed & Breakfast">Bed & Breakfast</option>
-            <option value="All-Inclusive">All-Inclusive</option>
-        </select>
+    <input
+    type="hidden"
+    id="room"
+    name="room"
+    value="{{ room_name }}">
+    
+
+    <label for="stay_type">Stay Type</label>
+<select id="stay_type" name="stay_type" required>
+    <option value="">-- Select Stay Type --</option>
+    <option value="Room Only">Room Only</option>
+    <option value="Bed & Breakfast">Bed & Breakfast</option>
+    <option value="All-Inclusive">All-Inclusive</option>
+</select>
+
 
         <label for="checkin">Check-in Date</label>
         <input type="date" id="checkin" name="checkin" required>
@@ -85,6 +88,29 @@
       checkoutInput.setAttribute('min', checkinInput.value);
     });
   });
+
+  // ID number validation based on type selected
+document.getElementById('id_type').addEventListener('change', function() {
+    const idInput = document.getElementById('id_number');
+    const type = this.value;
+
+    if (type === 'National ID') {
+        idInput.placeholder = 'Enter National ID (6-8 digits)';
+        idInput.pattern = '[0-9]{6,8}';
+        idInput.title = 'National ID must be 6 to 8 digits';
+        idInput.maxLength = 8;
+    } else if (type === 'Passport') {
+        idInput.placeholder = 'Enter Passport Number (e.g. A1234567)';
+        idInput.pattern = '[A-Za-z0-9]{7,9}';
+        idInput.title = 'Passport number must be 7 to 9 alphanumeric characters';
+        idInput.maxLength = 9;
+    } else {
+        idInput.placeholder = 'Enter ID or Passport Number';
+        idInput.pattern = '';
+        idInput.title = '';
+        idInput.maxLength = 20;
+    }
+});
 </script>
 
         <label for="guests">Number of Guests</label>

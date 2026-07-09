@@ -46,12 +46,13 @@ class RoomAdmin(admin.ModelAdmin):
     search_fields = ['room_number']
     list_editable = ['availability']
     ordering = ['room_number']
+    readonly_fields = ('price_per_night', 'room_type', 'availability', 'room_number')
 
 
 # Guest
 @admin.register(GuestProfile)
 class GuestProfileAdmin(admin.ModelAdmin):
-    list_display = ['user_name', 'email', 'phone']
+    list_display = ['user_name', 'email', ]
     search_fields = ['user_name', 'email']
     ordering = ['user_name']
 
@@ -97,6 +98,7 @@ class PaymentAdmin(admin.ModelAdmin):
     search_fields = ['booking__guest__user_name']
     readonly_fields = ['booking', 'amount', 'payment_method', 'payment_date']
     ordering = ['-payment_date']
+
 
     def has_delete_permission(self, request, obj=None):
         return False

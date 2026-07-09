@@ -82,6 +82,17 @@ function calculateTotal() {
         <span class="total-amount">Total: KSh ${total.toLocaleString()}</span>
     `;
 }
+// Attach event listeners for calculator
+const stayTypeEl = document.getElementById('stay_type');
+const checkinEl = document.getElementById('checkin');
+const checkoutEl = document.getElementById('checkout');
+
+if (stayTypeEl) stayTypeEl.addEventListener('change', calculateTotal);
+if (checkinEl) checkinEl.addEventListener('change', calculateTotal);
+if (checkoutEl) checkoutEl.addEventListener('change', calculateTotal);
+
+// Run on page load
+calculateTotal();
 
 // Attach listeners
 ['room', 'stay_type', 'checkin', 'checkout'].forEach(id => {
@@ -89,23 +100,23 @@ function calculateTotal() {
     document.getElementById(id)?.addEventListener('input', calculateTotal);
 });
 // Payment tab switching
-const payTabs = document.querySelectorAll('.pay-tab');
-const payPanels = document.querySelectorAll('.pay-panel');
-const paymentMethodInput = document.getElementById('payment_method_input');
+// const payTabs = document.querySelectorAll('.pay-tab');
+// const payPanels = document.querySelectorAll('.pay-panel');
+// const paymentMethodInput = document.getElementById('payment_method_input');
 
-if (payTabs.length) {
-    payTabs.forEach(tab => {
-        tab.addEventListener('click', function () {
-            payTabs.forEach(t => t.classList.remove('active'));
-            payPanels.forEach(p => p.classList.remove('active'));
-            this.classList.add('active');
-            document.getElementById(this.dataset.tab).classList.add('active');
-            if (paymentMethodInput) {
-                paymentMethodInput.value = this.dataset.tab;
-            }
-        });
-    });
-}
+// if (payTabs.length) {
+//     payTabs.forEach(tab => {
+//         tab.addEventListener('click', function () {
+//             payTabs.forEach(t => t.classList.remove('active'));
+//             payPanels.forEach(p => p.classList.remove('active'));
+//             this.classList.add('active');
+//             document.getElementById(this.dataset.tab).classList.add('active');
+//             if (paymentMethodInput) {
+//                 paymentMethodInput.value = this.dataset.tab;
+//             }
+//         });
+//     });
+// }
 // Validate card expiry date before allowing submission
 const paymentForm = document.querySelector('.payment-form');
 
